@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+.idea/
+.vscode/
+*.log
+allure-results/
+allure-report/
+geckodriver.log
+chromedriver
+geckodriver
