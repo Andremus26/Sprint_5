@@ -1,23 +1,24 @@
+import pytest
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from locators import MainPageLocators
 
 class TestConstructor:
-    def test_switch_to_buns(self, driver):
-        # Нажимаем на вкладку "Соусы", чтобы активной стала не "Булки"
-        driver.find_element(*MainPageLocators.SAUCES_TAB).click()
-        WebDriverWait(driver, 3).until(
-            EC.element_to_be_clickable(MainPageLocators.BUNS_TAB)
-        ).click()
-        active_tab = driver.find_element(*MainPageLocators.ACTIVE_TAB)
-        assert "Булки" in active_tab.text
-
-    def test_switch_to_sauces(self, driver):
-        driver.find_element(*MainPageLocators.SAUCES_TAB).click()
-        active_tab = driver.find_element(*MainPageLocators.ACTIVE_TAB)
-        assert "Соусы" in active_tab.text
-
-    def test_switch_to_fillings(self, driver):
-        driver.find_element(*MainPageLocators.FILLINGS_TAB).click()
-        active_tab = driver.find_element(*MainPageLocators.ACTIVE_TAB)
-        assert "Начинки" in active_tab.text
+    @pytest.mark.parametrize(
+        "tab_locator, expected_text",
+        [
+            (MainPageLocators.BUNS_TAB, "Булки"),
+            (MainPageLocators.SAUCES_TAB, "Соусы"),
+            (MainPageLocators.FILLINGS_TAB, "Начинки"),
+        ]
+    )
+    def test_switch_to_tab(self, driver, tab_locator, expected_text):
+        # Предварительно кликаем на булки, чтобы активной была какая-то вкладка
+        driver.find_element(*MainPageLocators.BUNS_TAB).click()
+        # Кликаем на проверяемую вкладку
+        driver.find_element(*tab_locator).click()
+        # Ждём, пока активная вкладка станет видимой и проверим текст
+        active_tab = WebDriverWait(driver, 3).until(
+            EC.visibility_of_element_located(MainPageLocators.ACTIVE_TAB)
+        )
+        assert expected_text in active_tab.text

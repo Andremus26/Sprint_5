@@ -1,12 +1,12 @@
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from locators import MainPageLocators, AccountPageLocators, LoginPageLocators
-from data_generator import generate_unique_email, generate_password
+from urls import LOGIN_PAGE_URL
 
 class TestLogout:
     def test_logout(self, driver, registered_user):
-        email, password = registered_user  # используем ту же фикстуру из test_login
-        # Вход в аккаунт
+        email, password = registered_user
+        # Вход
         driver.find_element(*MainPageLocators.LOGIN_BUTTON).click()
         driver.find_element(*LoginPageLocators.EMAIL_INPUT).send_keys(email)
         driver.find_element(*LoginPageLocators.PASSWORD_INPUT).send_keys(password)
@@ -16,10 +16,10 @@ class TestLogout:
         WebDriverWait(driver, 3).until(
             EC.visibility_of_element_located(AccountPageLocators.ACCOUNT_INFO)
         )
-        # Клик по кнопке "Выход"
+        # Выход
         driver.find_element(*AccountPageLocators.LOGOUT_BUTTON).click()
-        # После выхода должна появиться кнопка "Войти" на главной
+        # Проверка, что попали на страницу входа
         WebDriverWait(driver, 3).until(
             EC.visibility_of_element_located(MainPageLocators.LOGIN_BUTTON)
         )
-        assert "login" in driver.current_url
+        assert driver.current_url == LOGIN_PAGE_URL
